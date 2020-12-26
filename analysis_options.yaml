@@ -1,0 +1,7 @@
+include: package:lint/analysis_options_package.yaml
+
+linter:
+  rules:
+    avoid_print: false
+    parameter_assignments: false
+    constant_identifier_names: false

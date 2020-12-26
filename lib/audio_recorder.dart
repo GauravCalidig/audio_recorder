@@ -5,11 +5,12 @@ import 'package:file/local.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 
+// ignore: avoid_classes_with_only_static_members
 class AudioRecorder {
-  static const MethodChannel _channel = const MethodChannel('audio_recorder');
+  static const MethodChannel _channel = MethodChannel('audio_recorder');
 
   /// use [LocalFileSystem] to permit widget testing
-  static LocalFileSystem fs = LocalFileSystem();
+  static LocalFileSystem fs = const LocalFileSystem();
 
   static Future start(
       {String path, AudioOutputFormat audioOutputFormat}) async {
@@ -31,11 +32,11 @@ class AudioRecorder {
           path += extension;
         }
       }
-      File file = fs.file(path);
+      final File file = fs.file(path);
       if (await file.exists()) {
-        throw new Exception("A file already exists at the path :" + path);
+        throw Exception("A file already exists at the path :$path");
       } else if (!await file.parent.exists()) {
-        throw new Exception("The specified parent directory does not exist");
+        throw Exception("The specified parent directory does not exist");
       }
     } else {
       extension = ".m4a"; // default value
@@ -45,24 +46,25 @@ class AudioRecorder {
   }
 
   static Future<Recording> stop() async {
-    Map<String, Object> response =
+    final Map<String, Object> response =
         Map.from(await _channel.invokeMethod('stop'));
-    Recording recording = new Recording(
-        duration: new Duration(milliseconds: response['duration']),
-        path: response['path'],
-        audioOutputFormat:
-            _convertStringInAudioOutputFormat(response['audioOutputFormat']),
-        extension: response['audioOutputFormat']);
+    final Recording recording = Recording(
+      duration: Duration(milliseconds: response['duration'] as int),
+      path: response['path'].toString(),
+      audioOutputFormat: _convertStringInAudioOutputFormat(
+          response['audioOutputFormat'].toString()),
+      extension: response['audioOutputFormat'].toString(),
+    );
     return recording;
   }
 
   static Future<bool> get isRecording async {
-    bool isRecording = await _channel.invokeMethod('isRecording');
+    final bool isRecording = await _channel.invokeMethod('isRecording');
     return isRecording;
   }
 
   static Future<bool> get hasPermissions async {
-    bool hasPermission = await _channel.invokeMethod('hasPermissions');
+    final bool hasPermission = await _channel.invokeMethod('hasPermissions');
     return hasPermission;
   }
 
@@ -104,6 +106,7 @@ class AudioRecorder {
   }
 }
 
+// ignore: constant_identifier_names
 enum AudioOutputFormat { AAC, WAV }
 
 class Recording {

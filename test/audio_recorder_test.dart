@@ -6,9 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final List<MethodCall> log = <MethodCall>[];
-  final fileName = 'audio_file';
-  final extension = '.m4a';
-  final duration = 1000;
+  const fileName = 'audio_file';
+  const extension = '.m4a';
+  const duration = 1000;
   Directory tempDirectory;
   String path;
   bool isRecording = false;
@@ -18,7 +18,7 @@ void main() {
     tempDirectory = await Directory.systemTemp.createTemp();
     path = '${tempDirectory.path}/$fileName';
 
-    MethodChannel('audio_recorder')
+    const MethodChannel('audio_recorder')
         .setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
       switch (methodCall.method) {
@@ -66,7 +66,7 @@ void main() {
 
   test('should start audio recorder with supported extension from path',
       () async {
-    for (var supportedExtension in ['.mp4', '.aac', '.m4a']) {
+    for (final supportedExtension in ['.mp4', '.aac', '.m4a']) {
       await AudioRecorder.start(
         path: path + supportedExtension,
       );
@@ -102,7 +102,7 @@ void main() {
 
   test('should start audio recorder with unknown extension from path',
       () async {
-    final unknownExtension = '.xxx';
+    const unknownExtension = '.xxx';
     await AudioRecorder.start(
       path: path + unknownExtension,
     );
@@ -122,33 +122,35 @@ void main() {
       () async {
     file = File(path + extension);
     await file.writeAsString('audio content', flush: true);
-    final startAudioRecorder = () async {
+    Future<void> startAudioRecorder() async {
       await AudioRecorder.start(
         path: path,
         audioOutputFormat: AudioOutputFormat.AAC,
       );
-    };
+    }
+
     expect(startAudioRecorder(), throwsA(isInstanceOf<Exception>()));
   });
 
   test('should throw when starting audio recorder with no parent directory',
       () async {
-    final badPathParent = '/xxx/$fileName$extension';
-    final startAudioRecorder = () async {
+    const badPathParent = '/xxx/$fileName$extension';
+    Future<void> startAudioRecorder() async {
       await AudioRecorder.start(
         path: badPathParent,
         audioOutputFormat: AudioOutputFormat.AAC,
       );
-    };
+    }
+
     expect(startAudioRecorder(), throwsA(isInstanceOf<Exception>()));
   });
 
   test('should stop audio recorder', () async {
     isRecording = true;
-    Recording recording = await AudioRecorder.stop();
+    final Recording recording = await AudioRecorder.stop();
     expect(recording, isInstanceOf<Recording>());
     expect(recording.path, path);
-    expect(recording.duration, Duration(milliseconds: duration));
+    expect(recording.duration, const Duration(milliseconds: duration));
     expect(recording.audioOutputFormat, AudioOutputFormat.AAC);
     expect(isRecording, isFalse);
   });
@@ -165,7 +167,7 @@ void main() {
   });
 
   test('should check permissions', () async {
-    bool hasPermissions = await AudioRecorder.hasPermissions;
+    final bool hasPermissions = await AudioRecorder.hasPermissions;
     expect(hasPermissions, true);
   });
 }
