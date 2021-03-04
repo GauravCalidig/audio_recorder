@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' as io;
 import 'dart:math';
 
@@ -10,7 +11,7 @@ import 'package:path_provider/path_provider.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -32,7 +33,7 @@ class _MyAppState extends State<MyApp> {
 class AppBody extends StatefulWidget {
   final LocalFileSystem localFileSystem;
 
-  const AppBody({this.localFileSystem = const LocalFileSystem(), Key key})
+  const AppBody({this.localFileSystem = const LocalFileSystem(), Key? key})
       : super(key: key);
 
   @override
@@ -41,7 +42,7 @@ class AppBody extends StatefulWidget {
 
 class AppBodyState extends State<AppBody> {
   Recording _recording = Recording();
-  bool _isRecording = false;
+  bool? _isRecording = false;
   Random random = Random();
   final TextEditingController _controller = TextEditingController();
 
@@ -53,14 +54,12 @@ class AppBodyState extends State<AppBody> {
         child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              FlatButton(
-                onPressed: _isRecording ? null : _start,
-                color: Colors.green,
+              TextButton(
+                onPressed: _isRecording! ? null : _start,
                 child: const Text("Start"),
               ),
-              FlatButton(
-                onPressed: _isRecording ? _stop : null,
-                color: Colors.red,
+              TextButton(
+                onPressed: _isRecording! ? _stop : null,
                 child: const Text("Stop"),
               ),
               TextField(
@@ -81,8 +80,8 @@ class AppBodyState extends State<AppBody> {
 
   Future<void> _start() async {
     try {
-      if (await AudioRecorder.hasPermissions) {
-        if (_controller.text != null && _controller.text != "") {
+      if (await (AudioRecorder.hasPermissions as FutureOr<bool>)) {
+        if (_controller.text != "") {
           String path = _controller.text;
           if (!_controller.text.contains('/')) {
             final io.Directory appDocDirectory =
@@ -95,13 +94,13 @@ class AppBodyState extends State<AppBody> {
         } else {
           await AudioRecorder.start();
         }
-        final bool isRecording = await AudioRecorder.isRecording;
+        final bool? isRecording = await AudioRecorder.isRecording;
         setState(() {
           _recording = Recording(duration: const Duration(), path: "");
           _isRecording = isRecording;
         });
       } else {
-        Scaffold.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("You must accept permissions")));
       }
     } catch (e) {
@@ -112,13 +111,13 @@ class AppBodyState extends State<AppBody> {
   Future<void> _stop() async {
     final recording = await AudioRecorder.stop();
     print("Stop recording: ${recording.path}");
-    final bool isRecording = await AudioRecorder.isRecording;
+    final bool? isRecording = await AudioRecorder.isRecording;
     final File file = widget.localFileSystem.file(recording.path);
     print("  File length: ${await file.length()}");
     setState(() {
       _recording = recording;
       _isRecording = isRecording;
     });
-    _controller.text = recording.path;
+    _controller.text = recording.path!;
   }
 }
