@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io' as io;
 import 'dart:math';
 
-import 'package:audio_recorder/audio_recorder.dart';
+import 'package:audio_recorder_nullsafety/audio_recorder_nullsafety.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +33,7 @@ class _MyAppState extends State<MyApp> {
 class AppBody extends StatefulWidget {
   final LocalFileSystem localFileSystem;
 
-  const AppBody({this.localFileSystem = const LocalFileSystem(), Key? key})
-      : super(key: key);
+  const AppBody({this.localFileSystem = const LocalFileSystem(), Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => AppBodyState();
@@ -51,29 +50,26 @@ class AppBodyState extends State<AppBody> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              TextButton(
-                onPressed: _isRecording! ? null : _start,
-                child: const Text("Start"),
-              ),
-              TextButton(
-                onPressed: _isRecording! ? _stop : null,
-                child: const Text("Stop"),
-              ),
-              TextField(
-                controller: _controller,
-                decoration: const InputDecoration(
-                  hintText: 'Enter a custom path',
-                ),
-              ),
-              Text("File path of the record: ${_recording.path}"),
-              Text("Format: ${_recording.audioOutputFormat}"),
-              Text("Extension : ${_recording.extension}"),
-              Text(
-                  "Audio recording duration : ${_recording.duration.toString()}")
-            ]),
+        child: Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
+          TextButton(
+            onPressed: _isRecording! ? null : _start,
+            child: const Text("Start"),
+          ),
+          TextButton(
+            onPressed: _isRecording! ? _stop : null,
+            child: const Text("Stop"),
+          ),
+          TextField(
+            controller: _controller,
+            decoration: const InputDecoration(
+              hintText: 'Enter a custom path',
+            ),
+          ),
+          Text("File path of the record: ${_recording.path}"),
+          Text("Format: ${_recording.audioOutputFormat}"),
+          Text("Extension : ${_recording.extension}"),
+          Text("Audio recording duration : ${_recording.duration.toString()}")
+        ]),
       ),
     );
   }
@@ -84,13 +80,11 @@ class AppBodyState extends State<AppBody> {
         if (_controller.text != "") {
           String path = _controller.text;
           if (!_controller.text.contains('/')) {
-            final io.Directory appDocDirectory =
-                await getApplicationDocumentsDirectory();
+            final io.Directory appDocDirectory = await getApplicationDocumentsDirectory();
             path = '${appDocDirectory.path}/${_controller.text}';
           }
           print("Start recording: $path");
-          await AudioRecorder.start(
-              path: path, audioOutputFormat: AudioOutputFormat.AAC);
+          await AudioRecorder.start(path: path, audioOutputFormat: AudioOutputFormat.AAC);
         } else {
           await AudioRecorder.start();
         }
@@ -100,8 +94,7 @@ class AppBodyState extends State<AppBody> {
           _isRecording = isRecording;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("You must accept permissions")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("You must accept permissions")));
       }
     } catch (e) {
       print(e);

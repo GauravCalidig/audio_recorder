@@ -1,6 +1,8 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'dart:io';
 
-import 'package:audio_recorder/audio_recorder.dart';
+import 'package:audio_recorder_nullsafety/audio_recorder_nullsafety.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,8 +20,7 @@ void main() {
     tempDirectory = await Directory.systemTemp.createTemp();
     path = '${tempDirectory.path}/$fileName';
 
-    const MethodChannel('audio_recorder')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
+    const MethodChannel('audio_recorder').setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
       switch (methodCall.method) {
         case 'start':
@@ -55,17 +56,13 @@ void main() {
     expect(log, <Matcher>[
       isMethodCall(
         'start',
-        arguments: <String, dynamic>{
-          "path": path! + extension,
-          "extension": extension
-        },
+        arguments: <String, dynamic>{'path': path! + extension, 'extension': extension},
       ),
     ]);
     expect(isRecording, isTrue);
   });
 
-  test('should start audio recorder with supported extension from path',
-      () async {
+  test('should start audio recorder with supported extension from path', () async {
     for (final supportedExtension in ['.mp4', '.aac', '.m4a']) {
       await AudioRecorder.start(
         path: path! + supportedExtension,
@@ -73,10 +70,7 @@ void main() {
       expect(log, <Matcher>[
         isMethodCall(
           'start',
-          arguments: <String, dynamic>{
-            "path": path! + supportedExtension,
-            "extension": supportedExtension
-          },
+          arguments: <String, dynamic>{'path': path! + supportedExtension, 'extension': supportedExtension},
         ),
       ]);
       expect(isRecording, isTrue);
@@ -91,17 +85,13 @@ void main() {
     expect(log, <Matcher>[
       isMethodCall(
         'start',
-        arguments: <String, dynamic>{
-          "path": path! + extension,
-          "extension": extension
-        },
+        arguments: <String, dynamic>{'path': path! + extension, 'extension': extension},
       ),
     ]);
     expect(isRecording, isTrue);
   });
 
-  test('should start audio recorder with unknown extension from path',
-      () async {
+  test('should start audio recorder with unknown extension from path', () async {
     const unknownExtension = '.xxx';
     await AudioRecorder.start(
       path: path! + unknownExtension,
@@ -109,17 +99,13 @@ void main() {
     expect(log, <Matcher>[
       isMethodCall(
         'start',
-        arguments: <String, dynamic>{
-          "path": path! + unknownExtension + extension,
-          "extension": extension
-        },
+        arguments: <String, dynamic>{'path': path! + unknownExtension + extension, 'extension': extension},
       ),
     ]);
     expect(isRecording, isTrue);
   });
 
-  test('should throw when starting audio recorder with existing file',
-      () async {
+  test('should throw when starting audio recorder with existing file', () async {
     file = File(path! + extension);
     await file!.writeAsString('audio content', flush: true);
     Future<void> startAudioRecorder() async {
@@ -132,8 +118,7 @@ void main() {
     expect(startAudioRecorder(), throwsA(isInstanceOf<Exception>()));
   });
 
-  test('should throw when starting audio recorder with no parent directory',
-      () async {
+  test('should throw when starting audio recorder with no parent directory', () async {
     const badPathParent = '/xxx/$fileName$extension';
     Future<void> startAudioRecorder() async {
       await AudioRecorder.start(

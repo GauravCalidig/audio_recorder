@@ -1,10 +1,10 @@
-name: audio_recorder
+name: audio_recorder_nullsafety
 description: A Flutter plugin to record audio.
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/ZaraclaJ/audio_recorder
 
 dependencies:
-  file: ^6.0.0
+  file: ^6.1.2
   flutter:
     sdk: flutter
   path: ^1.8.0
@@ -12,14 +12,24 @@ dependencies:
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
+
 flutter:
-  plugin:
-    androidPackage: com.jordanalcaraz.audiorecorder.audiorecorder
-    pluginClass: AudioRecorderPlugin
+plugin:
+    platforms:
+      android:
+        package: com.jordanalcaraz.audiorecorder.audiorecorder
+        pluginClass: AudioRecorderPlugin
+      ios:
+        pluginClass: AudioRecorderPlugin
+  
+
+#   plugin:
+#     androidPackage: com.jordanalcaraz.audiorecorder.audiorecorder
+#     pluginClass: AudioRecorderPlugin
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lint: ^1.5.2
-  path_provider: ^2.0.1
-  test: ^1.16.5
+  lint: ^1.8.1
+  path_provider: ^2.0.8
+  test: ^1.17.12
